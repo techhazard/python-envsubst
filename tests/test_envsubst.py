@@ -136,6 +136,56 @@ class TestEnvsubst(unittest.TestCase):
         for test in tests:
             self.assertEqual(test, envsubst(test))
 
+    def test_escaped_not_in_witelist(self):
+        tests = [
+            r'i am an \$ESCAPED variable',
+            r'i am an \${ESCAPED:-bracketed} \${expression}',
+        ]
+        for test in tests:
+            self.assertEqual(test, envsubst(test, ['OTHER_VAR']))
+
+    def test_escaped_in_witelist(self):
+        tests = [
+            r'i am an \$ESCAPED variable',
+            r'i am an \${ESCAPED:-bracketed} \${expression}',
+        ]
+        for test in tests:
+            self.assertEqual(test, envsubst(test, ['ESCAPED', 'expression']))
+
+    def test_simple_var_default_in_whitelist(self):
+        default_val = 'test default val'
+        os.environ['DEFAULT'] = default_val
+        os.environ['TEST'] = ''
+
+        test_fmt = 'abc {0} def'
+        test_str = test_fmt.format('${TEST:-$DEFAULT}')
+        expected = test_fmt.format('${TEST:-' + default_val + '}')
+        actual = envsubst(test_str, ['DEFAULT'])
+        self.assertEqual(actual, expected)
+
+    def test_simple_var_default_both_in_whitelist(self):
+        default_val = 'test default val'
+        os.environ['DEFAULT'] = default_val
+        os.environ['TEST'] = ''
+
+        test_fmt = 'abc {0} def'
+        test_str = test_fmt.format('${TEST:-$DEFAULT}')
+        expected = test_fmt.format(default_val)
+        actual = envsubst(test_str, ['DEFAULT', 'TEST'])
+        self.assertEqual(actual, expected)
+
+    def test_simple_var_test_both_in_whitelist(self):
+        default_val = 'test default val'
+        os.environ['DEFAULT'] = default_val
+        os.environ['TEST'] = ''
+
+        test_fmt = 'abc {0} def'
+        test_str = test_fmt.format('${TEST:-$DEFAULT}')
+        expected = test_fmt.format('$DEFAULT')
+        actual = envsubst(test_str, ['TEST'])
+        self.assertEqual(actual, expected)
+
+
     def test_simple_var_default(self):
         default_val = 'test default val'
         os.environ['DEFAULT'] = default_val
