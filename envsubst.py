@@ -104,26 +104,29 @@ def envsubst(string):
 
 def main():
     opened = False
-    f = sys.stdin
+
+    input_file = sys.stdin
+    output_file = sys.stdout
+
     try:
         try:
-            fn = sys.argv[1]
-            if fn != '-':
-                f = open(fn)
+            filename = sys.argv[1]
+            if filename != '-':
+                input_file = open(filename)
                 opened = True
         except IndexError:
             pass
 
-        data = f.read()
+        data = input_file.read()
         try:
             data = data.decode('utf-8')
         except AttributeError:
             pass
 
-        sys.stdout.write(envsubst(data))
+        output_file.write(envsubst(data))
     finally:
         if opened:
-            f.close()
+            input_file.close()
 
 
 if __name__ == '__main__':
