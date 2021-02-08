@@ -59,4 +59,4 @@ python-envsubst also supports replacing only a listed subset of the environment 
     >>> print(envsubst('greetings, ${MY_NAME:-$DEFAULT_NAME}!', ['MY_NAME']))
     greetings, $DEFAULT_NAME!
 
-if the list is not passed or ``None``, all values are replaced.
+if the list is not passed or ``None``, all values are replaced, with an empty list, no values are replaced.
